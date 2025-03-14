@@ -72,11 +72,11 @@ if __name__ == "__main__":
     alpha_experiment(
         data_vector_gen=random_vectors,
         query_vector_gen=random_vectors,
-        alpha_values=[1.0, 1.2, 1.4, 1.6, 1.8, 2.0, 3.0],
+        alpha_values=[1.0, 1.1, 1.2, 1.3, 1.4, 1.5],
         size_configs=[
-            # ("10k", 10_000, 128),
-            ("100k", 100_000, 128),
-            ("1m", 1_000_000, 128),
+            ("10k", 10_000, 128),
+            # ("100k", 100_000, 128),
+            # ("1m", 1_000_000, 128),
         ],
         num_query=5000,
         query_batch_size=-1,  # use point query
