@@ -1074,10 +1074,9 @@ void Index<T, TagT, LabelT>::occlude_list(const uint32_t location, std::vector<N
     // Initialize occlude_factor to pool.size() many 0.0f values for correctness
     occlude_factor.insert(occlude_factor.end(), pool.size(), 0.0f);
 
+    int count = 0;
     float cur_alpha = alpha;
-    while (
-//        cur_alpha <= alpha &&
-           result.size() < degree)
+    while (count < 2 && /* cur_alpha <= alpha && */ result.size() < degree)
     {
         // used for MIPS, where we store a value of eps in cur_alpha to
         // denote pruned out entries which we can skip in later rounds.
@@ -1147,7 +1146,8 @@ void Index<T, TagT, LabelT>::occlude_list(const uint32_t location, std::vector<N
                 }
             }
         }
-//        cur_alpha *= 1.2f;
+        // cur_alpha *= 1.2f;
+        count += 1;
     }
 }
 

@@ -13,7 +13,7 @@ colors = [
     "#e377c2",  # pink
     "#7f7f7f",  # gray
     "#bcbd22",  # olive
-    "#17becf"  # cyan
+    "#17becf",  # cyan
 ]
 
 
@@ -28,6 +28,7 @@ def alpha_experiment(data_vector_gen,  # the data distribution
     for abb, num_row, dimension in size_configs:
         latency_recall_experiments_plot_config = []
         throughput_recall_experiments_plot_config = []
+        alpha_recall_experiments_plot_config = []
         sampled_vectors = data_vector_gen(num_row, dimension, np.float32, seed)
         for idx, alpha_value in enumerate(alpha_values):
             expr_name = f"expr_{abb}_alpha{alpha_value}"
@@ -46,11 +47,13 @@ def alpha_experiment(data_vector_gen,  # the data distribution
                 complexity=defaults.COMPLEXITY
             )
             summary, _ = expr.save_perf_counters()
+            color = colors[idx % len(colors)]
             avg_latency = summary[Experiment.PERF_COUNTER_NAMES[Experiment.PERF_COUNTER_QUERY_LATENCY_SECOND]]["average"]
             avg_throughput = summary[Experiment.PERF_COUNTER_NAMES[Experiment.PERF_COUNTER_QUERY_THROUGHPUT_PS]]["average"]
             avg_recall = summary[Experiment.PERF_COUNTER_NAMES[Experiment.PERF_COUNTER_QUERY_RECALL_PERCENT]]["average"]
-            latency_recall_experiments_plot_config.append(((avg_latency, avg_recall), colors[idx], f"alpha={alpha_value}"))
-            throughput_recall_experiments_plot_config.append(((avg_throughput, avg_recall), colors[idx], f"alpha={alpha_value}"))
+            latency_recall_experiments_plot_config.append(((avg_latency, avg_recall), color, f"alpha={alpha_value:.3f}"))
+            throughput_recall_experiments_plot_config.append(((avg_throughput, avg_recall), color, f"alpha={alpha_value:.3f}"))
+            alpha_recall_experiments_plot_config.append(((alpha_value, avg_recall), color, f""))
             seed += 157  # randomize different runs
         plot_all_expr(
             f"latency_recall_{abb}.png",
@@ -66,19 +69,32 @@ def alpha_experiment(data_vector_gen,  # the data distribution
             fig_x_name="Throughput (Query Per Second)",
             fig_y_name=f"Recall@{k}"
         )
-
+        plot_all_expr(
+            f"alpha_recall_{abb}.png",
+            alpha_recall_experiments_plot_config,
+            fig_name=f"{abb}: Alpha vs {k}-recall@{k}",
+            fig_x_name="Alpha",
+            fig_y_name=f"Recall@{k}"
+        )
 
 if __name__ == "__main__":
+    alpha_values = []
+    val = 1.0
+    while val <= 1.5:
+        alpha_values.append(val)
+        val += 0.025
     alpha_experiment(
         data_vector_gen=random_vectors,
         query_vector_gen=random_vectors,
-        alpha_values=[1.0, 1.1, 1.2, 1.3, 1.4, 1.5],
+        # alpha_values=[1.0, 2.0, 3.0, 4.0],
+        # alpha_values=[1.0, 1.1, 1.2, 1.3, 1.4, 1.5],
+        alpha_values=alpha_values,
         size_configs=[
             ("10k", 10_000, 128),
             # ("100k", 100_000, 128),
             # ("1m", 1_000_000, 128),
         ],
-        num_query=5000,
+        num_query=2500,
         query_batch_size=-1,  # use point query
         k=10,
         seed=1028,

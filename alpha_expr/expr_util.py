@@ -257,5 +257,6 @@ def plot_all_expr(fig_save_name, args, fig_name,
     ax.set_title(fig_name)
     if fig_use_legend:
         ax.legend()
-    plt.savefig(fig_save_name, dpi=300)
+    plt.tight_layout()
+    plt.savefig(fig_save_name, dpi=600)
     print(f"Plotted {fig_save_name}.")
