@@ -10,5 +10,5 @@ popd
 
 pip install build
 python -m build
-pip install dist/*.whl
+pip install --force dist/*.whl
 pip install -r alpha_expr/requirements.txt
